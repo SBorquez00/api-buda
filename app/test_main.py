@@ -27,3 +27,26 @@ def test_get_all_spreads():
     assert "spread" in response["spreads"][0]
     assert response["spreads"][0]["spread"][1] == "CLP"
     assert isinstance(response["spreads"][0]["spread"][0], float)
+
+def test_set_alert_spread():
+    response = client.post("/alert", json={"market_id": "btc-clp", "spread": 100})
+    assert response.status_code == 200
+
+def test_get_polling():
+    #set alert
+    client.post("/alert", json={"market_id": "btc-clp", "spread": 0})
+    #polling
+    response = client.get("/polling_alert_spread")
+    assert response.status_code == 200
+    response = response.json()
+    assert response["alert"]["market-id"] == "btc-clp"
+    assert response["alert"]["actual-spread-greater"] == True
+
+def test_get_polling_without_alert():
+    #reset alert to default value
+    client.post("/alert", json={"market_id": "", "spread": 0.0})
+    response = client.get("/polling_alert_spread")
+    assert response.status_code == 404
+    response = response.json()
+    assert response["detail"] == "Alert not founded. Use /alert endpoint."
+
