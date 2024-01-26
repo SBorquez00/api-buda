@@ -17,7 +17,7 @@ app = FastAPI()
 def make_get_request(url: str):
     response = requests.get(url)
     if response.status_code != 200:
-        raise Exception("Bad response from buda's server", response.status_code)
+        raise Exception("Bad response from buda's server, verify your request", response.status_code)
     return response.json()
 
 def get_markets():
